@@ -1,37 +1,35 @@
 package com.company;
 
 public class MineBoard {
-    boolean[][] board;
+   MineSpace[][] grid;
 
-    public static final int S = 0, M = 1, L = 2;
+   int r, c, m;
 
-    public MineBoard(int t) {
-        switch (t) {
-            case S:
-                board = new boolean[5][5];
-                for(int x = 0; x < 5; x++) {
-                    for(int y = 0; y < 5; y++) {
-                        board[x][y] = ((int)(Math.random() * 20) < 5);
-                    }
-                }
-                break;
-            case M:
-                board = new boolean[10][10];
-                for(int x = 0; x < 10; x++) {
-                    for(int y = 0; y < 10; y++) {
-                        board[x][y] = ((int)(Math.random() * 20) < 10);
-                    }
-                }
-                break;
-            case L:
-                board = new boolean[15][15];
-                for(int x = 0; x < 15; x++) {
-                    for(int y = 0; y < 15; y++) {
-                        board[x][y] = ((int)(Math.random() * 20) < 15);
-                    }
-                }
-                break;
+    public MineBoard(int r, int c, int m, int cc, int cr) {
+        this.r = r;
+        this.c = c;
+        this.m = m;
+    }
+
+    public void createMap(int cc, int cr) {
+        grid = new MineSpace[r][c];
+        int t = r * c;
+
+        for(int y = 0; y < r; y++) {
+            for(int x = 0; x < c; x++) {
+                grid[y][x] = new MineSpace();
+                if(y == cr && x == cc)
+                    continue;
+                grid[y][x].setMine((int)(Math.random() * t) < m);
+            }
         }
+    }
 
+    public MineSpace getSpace(int c, int r) {
+        try {
+            return grid[r][c];
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
     }
 }
