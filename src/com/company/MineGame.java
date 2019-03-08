@@ -5,7 +5,7 @@ public class MineGame {
 
     MineBoard map;
 
-    int ro, co, mi, ma, ds, st;
+    int ro, co, mi, ma, ds, st; //ro = row, co = column, mi = mines, ma = marked, st = state, ds = deadseconds
     long sTime;
 
     public MineGame(int ro, int co, int mi) {
@@ -16,7 +16,6 @@ public class MineGame {
         ma = 0;
 
         st = NOGAME;
-
     }
 
     public MineBoard getMap() {
@@ -39,6 +38,7 @@ public class MineGame {
         return ma;
     }
 
+    //Number of unmarked mines
     public int getMiC() {
         int MiC = 0;
 
@@ -49,7 +49,33 @@ public class MineGame {
                 }
             }
         }
-        
+
         return MiC;
+    }
+
+    public MineBoard getBoard() {
+        return map;
+    }
+
+    public void setMa(int ma) {
+        this.ma = ma;
+    }
+
+    public void setSt(int st) {
+        this.st = st;
+    }
+
+    public void reveal(int y, int x) {
+        map.grid[y][x].setState(MineSpace.SHOWN);
+        if(map.grid[y][x].toString().equals("-")) {
+            reveal(y - 1, x);
+            reveal(y + 1, x);
+            reveal(y, x - 1);
+            reveal(y, x + 1);
+        }
+    }
+
+    public void makeGame(int r, int c) {
+        map.createMap(c, r);
     }
 }
