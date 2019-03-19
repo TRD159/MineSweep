@@ -13,14 +13,7 @@ public class MinePanel extends JPanel implements Runnable {
     int numCol, numRow, numMin;
     double upPer = 1000.0/35.0;
 
-    BufferedImage Dead, Oh, Happy, Happy_Down, Shades,
-                    Digit_Nine, Digit_Eight, Digit_Seven,
-                    Digit_Six, Digit_Five, Digit_Four,
-                    Digit_Three, Digit_Two, Digit_One,
-                    Digit_Zero, Eight, Seven, Six,
-                    Five, Four, Three, Two, One,
-                    Empty, Unclicked, Flag, Question,
-                    Mine, Incorrect_Flag, Exploded;
+    Map<String, BufferedImage> images = new Map<>();
 
     MineGame game;
 
@@ -34,13 +27,11 @@ public class MinePanel extends JPanel implements Runnable {
         File img = new File("Images");
         File[] imgs = img.listFiles();
 
-        for(File f: imgs) {
-            String nam = f.getName().substring(0, f.getName().length() - 4);
-
-        }
-
         try {
-
+            for(File f: imgs) {
+                String nam = f.getName().substring(0, f.getName().length() - 4);
+                images.put(nam, ImageIO.read(f));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,6 +74,7 @@ public class MinePanel extends JPanel implements Runnable {
 
     public void addNotify() {
         super.addNotify();
+        requestFocus();
         Thread t = new Thread(this);
         t.start();
     }
