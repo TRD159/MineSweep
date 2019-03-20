@@ -24,6 +24,10 @@ public class MinePanel extends JPanel implements Runnable {
         this.numRow = numRow;
         this.numMin = numMin;
 
+        setSize(numCol * 16 + 96, numRow * 16 + 96);
+
+        game = new MineGame(numRow, numCol, numMin);
+
         File img = new File("Images");
         File[] imgs = img.listFiles();
 
@@ -63,12 +67,13 @@ public class MinePanel extends JPanel implements Runnable {
         try {
             Thread.sleep((long)upPer);
         } catch (InterruptedException e) {
-
+            e.printStackTrace();
         }
-
+        repaint();
     }
 
     public void paint(Graphics g) {
+        Graphics g2 = buffer.getGraphics();
 
     }
 

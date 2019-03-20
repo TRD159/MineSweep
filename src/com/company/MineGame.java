@@ -16,6 +16,8 @@ public class MineGame {
         ma = 0;
 
         st = NOGAME;
+
+        makeGame(3, 3);
     }
 
     public MineBoard getMap() {
@@ -36,6 +38,10 @@ public class MineGame {
 
     public int getMa() {
         return ma;
+    }
+
+    public int getSt() {
+        return st;
     }
 
     //Number of unmarked mines
@@ -76,6 +82,11 @@ public class MineGame {
     }
 
     public void makeGame(int r, int c) {
-        map.createMap(c, r);
+        map = new MineBoard(ro, co, mi, c, r);
+        System.out.println(map.toString());
+    }
+
+    public void check() {
+
     }
 }
