@@ -21,24 +21,7 @@ public class MinePanel extends JPanel implements Runnable {
 
     boolean first = true;
 
-    JMenuBar men;
 
-    JMenu fil;
-    JMenu hel;
-
-    JMenu nu;
-
-    JMenuItem ez;
-    JMenuItem nm;
-    JMenuItem hd;
-
-    JMenuItem hi;
-
-    JMenuItem ex;
-
-    JMenuItem rul;
-
-    JMenuItem abt;
 
     public MinePanel(int numCol, int numRow, int numMin) {
 
@@ -46,12 +29,14 @@ public class MinePanel extends JPanel implements Runnable {
         this.numRow = numRow;
         this.numMin = numMin;
 
-        setSize((numCol + 2) * 16, (numRow + 4) * 16);
+        setSize((numCol + 2) * 16, (numRow + 4) * 16 + 20);
 
         game = new MineGame(numRow, numCol, numMin);
 
         File img = new File("Images");
         File[] imgs = img.listFiles();
+
+        setLayout(null);
 
         try {
             for(File f: imgs) {
@@ -64,48 +49,6 @@ public class MinePanel extends JPanel implements Runnable {
 
         buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 
-        ez = new JMenuItem("Easy");
-        nm = new JMenuItem("Normal");
-        hd = new JMenuItem("Hard");
-
-        nu = new JMenu("New Game") {
-            {
-                add(ez);
-                add(nm);
-                add(hd);
-            }
-        };
-
-        hi = new JMenuItem("High Scores");
-
-        ex = new JMenuItem("Exit");
-
-        fil = new JMenu("File") {
-            {
-                add(hi);
-                add(ex);
-            }
-        };
-
-        rul = new JMenuItem("Rules");
-
-        abt = new JMenuItem("About");
-
-        hel = new JMenu("Help") {
-            {
-                add(rul);
-                add(abt);
-            }
-        };
-
-        men = new JMenuBar() {
-            {
-                add(fil);
-                add(hel);
-            }
-        };
-
-        add(men);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -133,7 +76,19 @@ public class MinePanel extends JPanel implements Runnable {
             }
         });
 
-        addNotify();
+        //addNotify();
+    }
+
+    public void easy() {
+        game = new MineGame(5, 5, 6);
+    }
+
+    public void medium() {
+        game = new MineGame(10, 10, 25);
+    }
+
+    public void hard() {
+        game = new MineGame(15, 15, 168);
     }
 
     @Override
@@ -151,8 +106,9 @@ public class MinePanel extends JPanel implements Runnable {
     public void paint(Graphics g) {
 
         Graphics g2 = buffer.getGraphics();
+        g2.setColor(Color.WHITE);
 
-        g2.clearRect(0, 0, buffer.getWidth(), buffer.getHeight());
+        g2.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
 
         int y = 48;
         for(MineSpace[] m: game.getBoard().grid) {
@@ -163,6 +119,9 @@ public class MinePanel extends JPanel implements Runnable {
             }
             y += 16;
         }
+
+        g2.drawImage(images.get("Happy"), (getWidth()/2) - 12, 12, null);
+
         paintComponents(g2);
         g.drawImage(buffer, 0, 0, null);
 
