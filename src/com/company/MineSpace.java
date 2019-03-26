@@ -38,10 +38,10 @@ public class MineSpace {
 
     @Override
     public String toString() {
-        if(mine)
+        if (mine)
             return "M";
         else if (num > 0)
-            return ""+num;
+            return "" + num;
         else
             return "-";
     }

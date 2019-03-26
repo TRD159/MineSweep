@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 
-public class MinePanel extends JPanel implements Runnable {
+public class MinePanel extends JPanel {
     int numCol, numRow, numMin;
     double upPer = 1000.0/35.0;
 
@@ -21,15 +21,13 @@ public class MinePanel extends JPanel implements Runnable {
 
     boolean first = true;
 
-
-
     public MinePanel(int numCol, int numRow, int numMin) {
 
         this.numCol = numCol;
         this.numRow = numRow;
         this.numMin = numMin;
 
-        setSize((numCol + 2) * 16, (numRow + 4) * 16 + 20);
+        setSize((numCol + 4) * 16, (numRow + 5) * 16);
 
         game = new MineGame(numRow, numCol, numMin);
 
@@ -54,7 +52,16 @@ public class MinePanel extends JPanel implements Runnable {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                System.out.println("Pressed");
+                if(isinGrid(e.getX(), e.getY())) {
+                    int x = (e.getX()/16)-2;
+                    int y = (e.getY()/16)-3;
+                    //System.out.println(x + ", " + y);
+                    if(game.st == MineGame.NOGAME) {
+                        game.makeGame(y, x);
+                        //game.setSt(MineGame.PLAYING);
+                    }
+                    game.reveal(y, x);
+                }
             }
 
             @Override
@@ -79,40 +86,16 @@ public class MinePanel extends JPanel implements Runnable {
         //addNotify();
     }
 
-    public void easy() {
-        game = new MineGame(5, 5, 6);
-    }
-
-    public void medium() {
-        game = new MineGame(10, 10, 25);
-    }
-
-    public void hard() {
-        game = new MineGame(15, 15, 168);
-    }
-
-    @Override
-    public void run() {
-        while(true) {
-            try {
-                Thread.sleep((long) upPer);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            repaint();
-        }
-    }
-
     public void paint(Graphics g) {
 
         Graphics g2 = buffer.getGraphics();
-        g2.setColor(Color.WHITE);
+        g2.setColor(Color.BLACK);
 
         g2.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
 
         int y = 48;
         for(MineSpace[] m: game.getBoard().grid) {
-            int x = 16;
+            int x = 32;
             for(MineSpace space: m) {
                 g2.drawImage(getSquareImage(space), x, y, null);
                 x += 16;
@@ -135,7 +118,7 @@ public class MinePanel extends JPanel implements Runnable {
     }
 
     public boolean isinGrid(int x, int y) {
-        return ((x >= 16 && x < (numCol + 1) * 16) && (y >= 48 && y < (numRow + 3) * 16));
+        return ((x >= 32 && x < (numCol + 2) * 16) && (y >= 48 && y < (numRow + 3) * 16));
     }
 
     public BufferedImage getSquareImage(MineSpace m)

@@ -72,18 +72,27 @@ public class MineGame {
     }
 
     public void reveal(int y, int x) {
-        map.grid[y][x].setState(MineSpace.SHOWN);
-        if(map.grid[y][x].toString().equals("-")) {
+
+        if ((y < 0 || y >= map.r) || (x < 0 || x >= map.c))
+            return;
+        if(map.getSpace(x, y).getState() == MineSpace.SHOWN)
+            return;
+        String t = map.getSpace(x, y).toString();
+        if (!t.equals("M")) {
+
+            map.grid[y][x].setState(MineSpace.SHOWN);
+
             reveal(y - 1, x);
             reveal(y + 1, x);
             reveal(y, x - 1);
             reveal(y, x + 1);
         }
+
     }
 
     public void makeGame(int r, int c) {
         map = new MineBoard(ro, co, mi, c, r);
-        System.out.println(map.toString());
+        //System.out.println(map.toString());
     }
 
     public void check() {
