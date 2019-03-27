@@ -13,6 +13,10 @@ public class MinePanel extends JPanel {
     int numCol, numRow, numMin;
     double upPer = 1000.0/35.0;
 
+    int sec = 0;
+
+    int fac = 0;
+
     Map<String, BufferedImage> images = new Map<>();
 
     MineGame game;
@@ -58,15 +62,22 @@ public class MinePanel extends JPanel {
                     //System.out.println(x + ", " + y);
                     if(game.st == MineGame.NOGAME) {
                         game.makeGame(y, x);
-                        //game.setSt(MineGame.PLAYING);
+                        game.setSt(MineGame.PLAYING);
                     }
                     game.reveal(y, x);
+                }
+
+                if(game.getSt() != MineGame.LOSE) {
+                    if ((e.getX() >= getWidth() / 2 - 12 && e.getX() < getWidth() / 2 + 12) && (e.getY() >= 12 && e.getY() < 36)) {
+                        fac = 1;
+                    }
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
+                fac = 0;
             }
         });
 
@@ -89,7 +100,7 @@ public class MinePanel extends JPanel {
     public void paint(Graphics g) {
 
         Graphics g2 = buffer.getGraphics();
-        g2.setColor(Color.BLACK);
+        g2.setColor(Color.LIGHT_GRAY);
 
         g2.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
 
@@ -103,18 +114,39 @@ public class MinePanel extends JPanel {
             y += 16;
         }
 
-        g2.drawImage(images.get("Happy"), (getWidth()/2) - 12, 12, null);
+        switch (fac) {
+            case 0:
+                g2.drawImage(images.get("Happy"), (getWidth()/2) - 12, 12, null);
+                break;
+            case 1:
+                g2.drawImage(images.get("Happy_Down"), (getWidth()/2) - 12, 12, null);
+                break;
+            case 2:
+                g2.drawImage(images.get("Oh"), (getWidth()/2) - 12, 12, null);
+                break;
+            case 3:
+                g2.drawImage(images.get("Dead"), (getWidth()/2) - 12, 12, null);
+                break;
+            case 4:
+                g2.drawImage(images.get("Shades"), (getWidth()/2) - 12, 12, null);
+                break;
+
+        }
+
+        if(game.getSt() == MineGame.PLAYING) {
+            sec = (int)((System.nanoTime() - game.sTime)/1000000000);
+        }
+        if(game.getSt() == MineGame.LOSE)
+            System.out.println(sec);
+
+        for(int i = 1; i <= 4; i++) {
+            g2.drawImage(images.get(num2Word(sec % 10, true)), (numCol + 2) * 16 - (12 * i) - 1, 12,  null);
+            sec /= 10;
+        }
 
         paintComponents(g2);
         g.drawImage(buffer, 0, 0, null);
 
-    }
-
-    public void addNotify() {
-        super.addNotify();
-        requestFocus();
-        Thread t = new Thread(this);
-        t.start();
     }
 
     public boolean isinGrid(int x, int y) {

@@ -126,6 +126,9 @@ public class MineFrame extends JFrame implements Runnable {
         //System.out.println(getHeight() - getInsets().bottom - getInsets().top);
         //System.out.println(p.getHeight());
 
+        Thread t = new Thread(this);
+        t.start();
+
         setVisible(true);
     }
 
@@ -175,6 +178,13 @@ public class MineFrame extends JFrame implements Runnable {
 
     @Override
     public void run() {
+        while(true) {
+            repaint();
+            try {
+                Thread.sleep((long) (1000.0 / 30));
+            } catch (InterruptedException e) {
 
+            }
+        }
     }
 }

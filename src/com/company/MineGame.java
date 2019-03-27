@@ -17,6 +17,8 @@ public class MineGame {
 
         st = NOGAME;
 
+        sTime = System.nanoTime();
+
         makeGame(3, 3);
     }
 
@@ -82,12 +84,15 @@ public class MineGame {
 
             map.grid[y][x].setState(MineSpace.SHOWN);
 
-            reveal(y - 1, x);
-            reveal(y + 1, x);
-            reveal(y, x - 1);
-            reveal(y, x + 1);
+            if(y > 0 && !map.grid[y - 1][x].isMine())
+                reveal(y - 1, x);
+            if(y < map.r - 1 && !map.grid[y + 1][x].isMine())
+                reveal(y + 1, x);
+            if(x > 0 && !map.grid[y][x - 1].isMine())
+                reveal(y, x - 1);
+            if(x < map.c - 1 && !map.grid[y][x + 1].isMine())
+                reveal(y, x + 1);
         }
-
     }
 
     public void makeGame(int r, int c) {
