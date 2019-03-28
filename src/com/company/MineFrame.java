@@ -178,12 +178,17 @@ public class MineFrame extends JFrame implements Runnable {
 
     @Override
     public void run() {
+        long wait = (long)(1000.0/30), startTime = System.nanoTime();
+        int uDone = 0;
         while(true) {
-            repaint();
-            try {
-                Thread.sleep((long) (1000.0 / 30));
-            } catch (InterruptedException e) {
-
+            long uNeed = ((System.nanoTime() - startTime)/1000)/wait;
+            boolean sR = false;
+            for(; uDone < uNeed; uDone++) {
+                p.update();
+                sR = true;
+            }
+            if(sR) {
+                repaint();
             }
         }
     }

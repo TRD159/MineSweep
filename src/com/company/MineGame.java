@@ -17,6 +17,7 @@ public class MineGame {
 
         st = NOGAME;
 
+        ds = 0;
         sTime = System.nanoTime();
 
         makeGame(3, 3);
@@ -74,14 +75,15 @@ public class MineGame {
     }
 
     public void reveal(int y, int x) {
-
         if ((y < 0 || y >= map.r) || (x < 0 || x >= map.c))
             return;
         if(map.getSpace(x, y).getState() == MineSpace.SHOWN)
             return;
+        if(map.grid[y][x].getState() == MineSpace.FLAG) {
+            return;
+        }
         String t = map.getSpace(x, y).toString();
         if (!t.equals("M")) {
-
             map.grid[y][x].setState(MineSpace.SHOWN);
 
             if(y > 0 && !map.grid[y - 1][x].isMine())
@@ -92,6 +94,32 @@ public class MineGame {
                 reveal(y, x - 1);
             if(x < map.c - 1 && !map.grid[y][x + 1].isMine())
                 reveal(y, x + 1);
+        } else {
+            for(int r = 0; r < map.grid.length; r++) {
+                for(int c = 0; c < map.grid[0].length; c++) {
+                    if(map.grid[r][c].isMine())
+                        map.grid[r][c].setState(MineSpace.SHOWN);
+                }
+            }
+            st = LOSE;
+            ds = (int)(System.nanoTime()/1000000000);
+        }
+
+        int m = 0;
+        int mr = 0;
+
+        for(int r = 0; r < map.grid.length; r++) {
+            for(int c = 0; c < map.grid[0].length; c++) {
+                if(map.grid[r][c].isMine())
+                    m++;
+                if(map.grid[r][c].getState() == MineSpace.UP)
+                    mr++;
+
+            }
+        }
+        if(m == mr) {
+            st = WIN;
+            ds = (int)(System.nanoTime()/1000000000);
         }
     }
 
