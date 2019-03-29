@@ -82,10 +82,10 @@ public class MineGame {
         if(map.grid[y][x].getState() == MineSpace.FLAG) {
             return;
         }
-        String t = map.getSpace(x, y).toString();
-        if (!t.equals("M")) {
-            map.grid[y][x].setState(MineSpace.SHOWN);
+        map.grid[y][x].setState(MineSpace.SHOWN);
 
+        String t = map.getSpace(x, y).toString();
+        if (t.equals("-")) {
             if(y > 0 && !map.grid[y - 1][x].isMine())
                 reveal(y - 1, x);
             if(y < map.r - 1 && !map.grid[y + 1][x].isMine())
@@ -94,7 +94,7 @@ public class MineGame {
                 reveal(y, x - 1);
             if(x < map.c - 1 && !map.grid[y][x + 1].isMine())
                 reveal(y, x + 1);
-        } else {
+        } else if(t.equals("M")) {
             for(int r = 0; r < map.grid.length; r++) {
                 for(int c = 0; c < map.grid[0].length; c++) {
                     if(map.grid[r][c].isMine())

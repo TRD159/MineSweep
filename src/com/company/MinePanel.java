@@ -29,6 +29,12 @@ public class MinePanel extends JPanel {
 
     int min;
 
+    MineSpace held;
+
+    boolean leftDown, rightDown;
+
+    int hx, hy;
+
     public MinePanel(int numCol, int numRow, int numMin) {
 
         this.numCol = numCol;
@@ -60,6 +66,14 @@ public class MinePanel extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
+
+                if(SwingUtilities.isRightMouseButton(e)) {
+                    rightDown = true;
+                }
+                if(SwingUtilities.isLeftMouseButton(e)) {
+                    leftDown = true;
+                }
+
                 if(isinGrid(e.getX(), e.getY())) {
                     int x = (e.getX() / 16) - 2;
                     int y = (e.getY() / 16) - 3;
@@ -72,6 +86,42 @@ public class MinePanel extends JPanel {
                 if(game.getSt() == MineGame.PLAYING) {
                     if ((e.getX() >= getWidth() / 2 - 12 && e.getX() < getWidth() / 2 + 12) && (e.getY() >= 12 && e.getY() < 36)) {
                         fac = 1;
+                    }
+                }
+
+                if(isinGrid(e.getX(), e.getY())) {
+                    dx = (e.getX() / 16) - 2;
+                    dy = (e.getY() / 16) - 3;
+                }
+
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+
+                if(SwingUtilities.isRightMouseButton(e)) {
+                    rightDown = false;
+                }
+                if(SwingUtilities.isLeftMouseButton(e)) {
+                    leftDown = false;
+                }
+
+                if(game.getSt() == MineGame.PLAYING) {
+                    fac = 0;
+                }
+
+                if(isinGrid(e.getX(), e.getY())) {
+                    int x = (e.getX() / 16) - 2;
+                    int y = (e.getY() / 16) - 3;
+                    //System.out.println(x + ", " + y);
+                    if (SwingUtilities.isLeftMouseButton(e)) {
+                        if (game.st == MineGame.NOGAME) {
+                            game.makeGame(y, x);
+                            game.setSt(MineGame.PLAYING);
+                        }
+                        game.reveal(y, x);
                     }
                 }
 
@@ -96,31 +146,7 @@ public class MinePanel extends JPanel {
                     }
                 }
 
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                super.mouseReleased(e);
-
                 dx = -1; dy = -1;
-
-                if(game.getSt() == MineGame.PLAYING) {
-                    fac = 0;
-                }
-
-                if(isinGrid(e.getX(), e.getY())) {
-                    int x = (e.getX() / 16) - 2;
-                    int y = (e.getY() / 16) - 3;
-                    //System.out.println(x + ", " + y);
-                    if (SwingUtilities.isLeftMouseButton(e)) {
-                        if (game.st == MineGame.NOGAME) {
-                            game.makeGame(y, x);
-                            game.setSt(MineGame.PLAYING);
-                        }
-                        game.reveal(y, x);
-                    }
-                }
             }
         });
 
@@ -132,6 +158,7 @@ public class MinePanel extends JPanel {
                     dx = (e.getX() / 16) - 2;
                     dy = (e.getY() / 16) - 3;
                 }
+                //System.out.println(dx + ", " + dy);
             }
 
             @Override
@@ -160,6 +187,12 @@ public class MinePanel extends JPanel {
         }
 
         min = (game.mi - game.ma);
+
+        if(dy != -1 && dx != -1)
+            held = game.map.grid[dy][dx];
+        else {
+            held = null;
+        }
     }
 
     public void paint(Graphics g) {
@@ -169,17 +202,42 @@ public class MinePanel extends JPanel {
 
         g2.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
 
+        hx = -1; hy = -1;
         int y = 48;
         for(MineSpace[] m: game.getBoard().grid) {
             int x = 32;
             for(MineSpace space: m) {
-                if(dx != -1 && dy != -1 && ((x/16) - 2 == dx && (y/16) - 3 == dy)) {
-                    g2.drawImage(images.get("Down"), x, y, null);
+                if(held != null && space.equals(held) && space.getState() == MineSpace.UP) {
+                    hx = x; hy = y;
+                } else {
+                    g2.drawImage(getSquareImage(space), x, y, null);
                 }
-                g2.drawImage(getSquareImage(space), x, y, null);
                 x += 16;
             }
             y += 16;
+        }
+
+        if(hx != -1 && hy != -1) {
+            if(leftDown && rightDown) {
+                for(int xg = dx - 1; xg <= dx + 1; xg++) {
+                    for(int yg = dy - 1; yg <= dy + 1; yg++) {
+                        if(xg == 0 && yg == 0) {
+                            continue;
+                        }
+
+                    }
+                }
+                for (int gx = hx - 16; gx <= hx + 16; gx += 16) {
+                    for (int gy = hy - 16; gy <= hy + 16; gy += 16) {
+                        System.out.println(gx + ", " + gy);
+                        if(gy >= (numRow + 3)*16 || gx >= (numCol + 2)*16)
+                            continue;
+                        g2.drawImage(images.get("Down"), gx, gy, null);
+                    }
+                }
+            } else {
+                g2.drawImage(images.get("Down"), hx, hy, null);
+            }
         }
 
         switch (fac) {
