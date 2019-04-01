@@ -166,6 +166,7 @@ public class MineFrame extends JFrame implements Runnable {
         add(p);
 
         setSize(p.getWidth() + getInsets().left + getInsets().right, p.getHeight() + getInsets().top + getInsets().bottom + 23);
+        //System.out.println(p.game.map.toString());
     }
 
     public void test() {
@@ -174,6 +175,8 @@ public class MineFrame extends JFrame implements Runnable {
         add(p);
 
         setSize(p.getWidth() + getInsets().left + getInsets().right, p.getHeight() + getInsets().top + getInsets().bottom + 23);
+
+        //System.out.println(p.game.map.toString());
     }
 
     @Override

@@ -58,7 +58,7 @@ public class MineBoard {
             }
         }
 
-
+        System.out.println(toString());
     }
 
     public MineSpace getSpace(int c, int r) {

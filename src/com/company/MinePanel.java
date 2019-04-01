@@ -31,9 +31,13 @@ public class MinePanel extends JPanel {
 
     MineSpace held;
 
-    boolean leftDown, rightDown;
+    boolean leftDown, rightDown, middleDown;
 
     int hx, hy;
+
+    int cx, cy;
+
+    int[] tim = new int[4];
 
     public MinePanel(int numCol, int numRow, int numMin) {
 
@@ -73,10 +77,13 @@ public class MinePanel extends JPanel {
                 if(SwingUtilities.isLeftMouseButton(e)) {
                     leftDown = true;
                 }
+                if(SwingUtilities.isMiddleMouseButton(e)) {
+                    middleDown = true;
+                }
 
                 if(isinGrid(e.getX(), e.getY())) {
-                    int x = (e.getX() / 16) - 2;
-                    int y = (e.getY() / 16) - 3;
+                    cx = (e.getX() / 16) - 2;
+                    cy = (e.getY() / 16) - 3;
                     //System.out.println(x + ", " + y);
                     if (SwingUtilities.isLeftMouseButton(e)) {
 
@@ -86,10 +93,12 @@ public class MinePanel extends JPanel {
                 if(game.getSt() == MineGame.PLAYING) {
                     if ((e.getX() >= getWidth() / 2 - 12 && e.getX() < getWidth() / 2 + 12) && (e.getY() >= 12 && e.getY() < 36)) {
                         fac = 1;
+                    } else if(isinGrid(e.getX(), e.getY())) {
+                        fac = 2;
                     }
                 }
 
-                if(isinGrid(e.getX(), e.getY())) {
+                if(isinGrid(e.getX(), e.getY()) && game.getSt() == MineGame.PLAYING) {
                     dx = (e.getX() / 16) - 2;
                     dy = (e.getY() / 16) - 3;
                 }
@@ -106,6 +115,9 @@ public class MinePanel extends JPanel {
                 }
                 if(SwingUtilities.isLeftMouseButton(e)) {
                     leftDown = false;
+                }
+                if(SwingUtilities.isMiddleMouseButton(e)) {
+                    middleDown = false;
                 }
 
                 if(game.getSt() == MineGame.PLAYING) {
@@ -144,6 +156,37 @@ public class MinePanel extends JPanel {
                                 break;
                         }
                     }
+                    if(isinGrid(e.getX(), e.getY()) && SwingUtilities.isMiddleMouseButton(e)) {
+                        int mar = 0;
+                        for(int xx = dx - 1; xx <= dx + 1; xx++) {
+                            for(int yy = dy - 1; yy <= dy + 1; yy++) {
+                                if(yy >= game.map.grid.length || yy < 0 || xx >= game.map.grid[0].length || xx < 0) {
+                                    continue;
+                                }
+                                if(yy == 0 && xx == 0) {
+                                    continue;
+                                }
+                                if(game.map.grid[yy][xx].getState() == MineSpace.FLAG) {
+                                    mar++;
+                                }
+                            }
+                        }
+                        if(game.map.grid[dy][dx].getState() == MineSpace.SHOWN && game.map.grid[dy][dx].getNum() == mar) {
+                            for (int xg = dx - 1; xg <= dx + 1; xg++) {
+                                for (int yg = dy - 1; yg <= dy + 1; yg++) {
+                                    if (xg == 0 && yg == 0) {
+                                        continue;
+                                    }
+                                    if (game.map.grid[yg][xg].getState() == MineSpace.FLAG || game.map.grid[yg][xg].getState() == MineSpace.SHOWN)
+                                        continue;
+                                    if (yg >= game.map.grid.length || yg < 0 || xg >= game.map.grid[0].length || xg < 0) {
+                                        continue;
+                                    }
+                                    game.reveal(yg, xg);
+                                }
+                            }
+                        }
+                    }
                 }
 
                 dx = -1; dy = -1;
@@ -154,7 +197,7 @@ public class MinePanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
-                if(isinGrid(e.getX(), e.getY())) {
+                if(isinGrid(e.getX(), e.getY()) && game.getSt() == MineGame.PLAYING) {
                     dx = (e.getX() / 16) - 2;
                     dy = (e.getY() / 16) - 3;
                 }
@@ -193,6 +236,11 @@ public class MinePanel extends JPanel {
         else {
             held = null;
         }
+
+        for(int i = 0; i < 4; i++) {
+            tim[i] = sec % 10;
+            sec /= 10;
+        }
     }
 
     public void paint(Graphics g) {
@@ -212,27 +260,47 @@ public class MinePanel extends JPanel {
                 } else {
                     g2.drawImage(getSquareImage(space), x, y, null);
                 }
+
+                if(game.getSt() == MineGame.LOSE) {
+                    if(x == (cx + 2) * 16 && y == (cy + 3) * 16 && game.map.grid[cy][cx].isMine())
+                        g2.drawImage(images.get("Exploded"), x, y, null);
+                    if(game.map.grid[(y/16)-3][x/16-2].getState() == MineSpace.FLAG && !game.map.grid[y/16-3][x/16-2].isMine()) {
+                        g2.drawImage(images.get("IncorrectFlag"), x, y, null);
+                    }
+                    if(game.map.grid[(y/16)-3][x/16-2].getState() == MineSpace.FLAG && game.map.grid[y/16-3][x/16-2].isMine()) {
+                        g2.drawImage(images.get("Flag"), x, y, null);
+                    }
+                }
+
                 x += 16;
             }
             y += 16;
         }
 
+        if(middleDown) {
+            for(int xg = dx - 1; xg <= dx + 1; xg++) {
+                for(int yg = dy - 1; yg <= dy + 1; yg++) {
+                    if(xg == 0 && yg == 0) {
+                        continue;
+                    }
+                    if(game.map.grid[yg][xg].getState() == MineSpace.FLAG || game.map.grid[yg][xg].getState() == MineSpace.SHOWN)
+                        continue;
+                    if(yg >= game.map.grid.length || yg < 0 || xg >= game.map.grid[0].length || xg < 0) {
+                        continue;
+                    }
+                    g2.drawImage(images.get("Down"), (xg + 2) * 16, (yg + 3) * 16, null);
+                }
+            }
+        }
+
         if(hx != -1 && hy != -1) {
-            if(leftDown && rightDown) {
+            if(middleDown) {
                 for(int xg = dx - 1; xg <= dx + 1; xg++) {
                     for(int yg = dy - 1; yg <= dy + 1; yg++) {
                         if(xg == 0 && yg == 0) {
                             continue;
                         }
 
-                    }
-                }
-                for (int gx = hx - 16; gx <= hx + 16; gx += 16) {
-                    for (int gy = hy - 16; gy <= hy + 16; gy += 16) {
-                        System.out.println(gx + ", " + gy);
-                        if(gy >= (numRow + 3)*16 || gx >= (numCol + 2)*16)
-                            continue;
-                        g2.drawImage(images.get("Down"), gx, gy, null);
                     }
                 }
             } else {
@@ -259,8 +327,7 @@ public class MinePanel extends JPanel {
 
         }
         for(int i = 1; i <= 4; i++) {
-            g2.drawImage(images.get(num2Word(sec % 10, true)), (numCol + 2) * 16 - (12 * i) - 1, 12,  null);
-            sec /= 10;
+            g2.drawImage(images.get(num2Word(tim[i - 1], true)), (numCol + 2) * 16 - (12 * i) - 1, 12,  null);
         }
 
         if(min < 0) {

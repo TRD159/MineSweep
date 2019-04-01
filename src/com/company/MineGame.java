@@ -79,7 +79,7 @@ public class MineGame {
             return;
         if(map.getSpace(x, y).getState() == MineSpace.SHOWN)
             return;
-        if(map.grid[y][x].getState() == MineSpace.FLAG) {
+        if(map.grid[y][x].getState() != MineSpace.UP) {
             return;
         }
         map.grid[y][x].setState(MineSpace.SHOWN);
