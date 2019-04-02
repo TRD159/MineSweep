@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class MineFrame extends JFrame implements Runnable {
     JMenuBar men;
@@ -83,6 +86,8 @@ public class MineFrame extends JFrame implements Runnable {
 
         rul = new JMenuItem("Rules");
 
+        rul.addActionListener(e -> help());
+
         hel = new JMenu("Help") {
             {
                 add(rul);
@@ -108,11 +113,51 @@ public class MineFrame extends JFrame implements Runnable {
             @Override
             public void windowOpened(WindowEvent e) {
                 super.windowOpened(e);
+                try {
+                    FileInputStream ea = new FileInputStream("Easy.txt");
+                    FileInputStream me = new FileInputStream("Medium.txt");
+                    FileInputStream hd = new FileInputStream("Hard.txt");
+
+                    ObjectInputStream Ea = new ObjectInputStream(ea);
+
+                    p.setScorese((ArrayList<Score>)Ea.readObject());
+
+                    ea.close();
+                    Ea.close();
+
+                    ObjectInputStream Me = new ObjectInputStream(me);
+
+                    p.setScoresn((ArrayList<Score>)Me.readObject());
+
+                    Me.close();
+                    me.close();
+
+                    ObjectInputStream Hd = new ObjectInputStream(hd);
+
+                    p.setScoresh((ArrayList<Score>)Hd.readObject());
+
+                    Hd.close();
+                    hd.close();
+                } catch (Exception x) {
+
+                }
             }
 
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
+                try {
+                    BufferedWriter es = new BufferedWriter(new FileWriter("Easy.txt"));
+                    es.write("");
+                    int x = 1;
+                    for(Score s: p.scorese) {
+                        es.append(x + s.toString());
+                        es.newLine();
+                        x++;
+                    }
+                } catch (Exception x) {
+
+                }
             }
 
             @Override
@@ -132,6 +177,45 @@ public class MineFrame extends JFrame implements Runnable {
         setVisible(true);
     }
 
+    public void help() {
+        JTextArea t = new JTextArea("Your goal is to reveal every \n" +
+                "space that isn't a mine.\n\n" +
+                "Left click reveals a space, and \n" +
+                "if it contains a mine, you lose the game.\n\n" +
+                "Revealing a space also reveals all\n" +
+                "non-mine spaces around it.\n\n" +
+                "Revealed spaces can have a number\n" +
+                "which repesents the number\n" +
+                "of mines around it.\n\n" +
+                "You can right click a space\n" +
+                "to mark it with a flag or a question.\n\n" +
+                "If a space has marked spaces around it\n" +
+                "equal to its number, you can middle\n" +
+                "click it to reveal all spaces around it.\n" +
+                "(Note: This does not work yet)\n\n");
+        JFrame txt = new JFrame("Rules");
+
+        txt.add(t);
+
+        txt.pack();
+
+        txt.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        txt.setVisible(true);
+    }
+
+    public void about() {
+        JTextArea t = new JTextArea("Minesweeper version 4.20\nDeveloped by Rohan Kancherla");
+        JFrame txt = new JFrame("Rules");
+
+        txt.add(t);
+
+        txt.pack();
+
+        txt.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        txt.setVisible(true);
+    }
     public void superEasy() {
         //System.out.println(getContentPane());
         getContentPane().remove(p);

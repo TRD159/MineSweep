@@ -5,9 +5,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class MinePanel extends JPanel {
     int numCol, numRow, numMin;
@@ -39,6 +42,8 @@ public class MinePanel extends JPanel {
 
     int[] tim = new int[4];
 
+    ArrayList<Score> scorese, scoresn, scoresh;
+
     public MinePanel(int numCol, int numRow, int numMin) {
 
         this.numCol = numCol;
@@ -65,6 +70,9 @@ public class MinePanel extends JPanel {
 
         buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 
+        scorese = new ArrayList<>();
+        scoresn = new ArrayList<>();
+        scoresh = new ArrayList<>();
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -237,9 +245,54 @@ public class MinePanel extends JPanel {
             held = null;
         }
 
+        int ces = sec;
         for(int i = 0; i < 4; i++) {
-            tim[i] = sec % 10;
-            sec /= 10;
+            tim[i] = ces % 10;
+            ces /= 10;
+        }
+        if(game.getSt() == MineGame.WIN) {
+            JFrame win = new JFrame();
+
+            JLabel t = new JLabel("Enter your name:");
+            JTextField w = new JTextField();
+
+            win.add(t);
+            win.add(w);
+
+            win.setSize(300, 300);
+
+            t.setBounds(50, 50, 200, 50);
+
+            w.setBounds(50, 100, 200, 50);
+
+            win.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+            win.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    super.windowClosing(e);
+                    switch (numMin) {
+                        case 15:
+                            scorese.add(new Score(sec, t.getText()));
+                            Collections.sort(scorese);
+                            Collections.reverse(scorese);
+                            break;
+                        case 40:
+                            scoresn.add(new Score(sec, t.getText()));
+                            Collections.sort(scoresn);
+                            Collections.reverse(scoresn);
+                            break;
+                        case 100:
+                            scoresh.add(new Score(sec, t.getText()));
+                            Collections.sort(scoresh);
+                            Collections.reverse(scoresh);
+                    }
+                }
+            });
+
+            win.setVisible(true);
+
+            game.setSt(MineGame.NOGAME);
         }
     }
 
@@ -410,5 +463,29 @@ public class MinePanel extends JPanel {
                 break;
         }
         return str.toString();
+    }
+
+    public ArrayList<Score> getScorese() {
+        return scorese;
+    }
+
+    public void setScorese(ArrayList<Score> scorese) {
+        this.scorese = scorese;
+    }
+
+    public ArrayList<Score> getScoresn() {
+        return scoresn;
+    }
+
+    public void setScoresn(ArrayList<Score> scoresn) {
+        this.scoresn = scoresn;
+    }
+
+    public ArrayList<Score> getScoresh() {
+        return scoresh;
+    }
+
+    public void setScoresh(ArrayList<Score> scoresh) {
+        this.scoresh = scoresh;
     }
 }
