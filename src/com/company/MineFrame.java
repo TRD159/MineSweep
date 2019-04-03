@@ -114,29 +114,46 @@ public class MineFrame extends JFrame implements Runnable {
             public void windowOpened(WindowEvent e) {
                 super.windowOpened(e);
                 try {
-                    FileInputStream ea = new FileInputStream("Easy.txt");
-                    FileInputStream me = new FileInputStream("Medium.txt");
-                    FileInputStream hd = new FileInputStream("Hard.txt");
+                    BufferedReader es = new BufferedReader(new FileReader("Easy.txt"));
+                    String line; int l = 0;
 
-                    ObjectInputStream Ea = new ObjectInputStream(ea);
+                    ArrayList<Score> eScore = new ArrayList<>();
 
-                    p.setScorese((ArrayList<Score>)Ea.readObject());
+                    while((line = es.readLine()) != null) {
+                        String[] info = line.split("-");
+                        eScore.set(l, new Score(Integer.parseInt(info[1]), info[0]));
+                        l++;
+                    }
+                    p.setScorese(eScore);
 
-                    ea.close();
-                    Ea.close();
+                    es.close();
 
-                    ObjectInputStream Me = new ObjectInputStream(me);
+                    BufferedReader nm = new BufferedReader(new FileReader("Medium.txt"));
+                    l = 0;
 
-                    p.setScoresn((ArrayList<Score>)Me.readObject());
+                    ArrayList<Score> nScore = new ArrayList<>();
 
-                    Me.close();
-                    me.close();
+                    while((line = nm.readLine()) != null) {
+                        String[] info = line.split("-");
+                        nScore.set(l, new Score(Integer.parseInt(info[1]), info[0]));
+                        l++;
+                    }
+                    p.setScoresn(nScore);
 
-                    ObjectInputStream Hd = new ObjectInputStream(hd);
+                    nm.close();
 
-                    p.setScoresh((ArrayList<Score>)Hd.readObject());
+                    BufferedReader hd = new BufferedReader(new FileReader("Hard.txt"));
+                    l = 0;
 
-                    Hd.close();
+                    ArrayList<Score> hScore = new ArrayList<>();
+
+                    while((line = hd.readLine()) != null) {
+                        String[] info = line.split("-");
+                        hScore.set(l, new Score(Integer.parseInt(info[1]), info[0]));
+                        l++;
+                    }
+                    p.setScoresh(hScore);
+
                     hd.close();
                 } catch (Exception x) {
 
@@ -148,13 +165,34 @@ public class MineFrame extends JFrame implements Runnable {
                 super.windowClosing(e);
                 try {
                     BufferedWriter es = new BufferedWriter(new FileWriter("Easy.txt"));
+
                     es.write("");
-                    int x = 1;
                     for(Score s: p.scorese) {
-                        es.append(x + s.toString());
+                        es.append(s.toString());
                         es.newLine();
-                        x++;
                     }
+
+                    es.close();
+
+                    BufferedWriter nm = new BufferedWriter(new FileWriter("Medium"));
+
+                    nm.write("");
+                    for(Score s: p.scoresn) {
+                        nm.append(s.toString());
+                        nm.newLine();
+                    }
+
+                    nm.close();
+
+                    BufferedWriter hd = new BufferedWriter(new FileWriter("Hard"));
+
+                    hd.write("");
+                    for(Score s: p.scoresh) {
+                        hd.append(s.toString());
+                        hd.newLine();
+                    }
+
+                    hd.close();
                 } catch (Exception x) {
 
                 }
@@ -216,6 +254,12 @@ public class MineFrame extends JFrame implements Runnable {
 
         txt.setVisible(true);
     }
+
+    public void high() {
+        JFrame txt = new JFrame("High Scores");
+        StringBuilder s = new StringBuilder();
+    }
+
     public void superEasy() {
         //System.out.println(getContentPane());
         getContentPane().remove(p);

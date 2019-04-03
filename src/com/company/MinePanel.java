@@ -70,9 +70,12 @@ public class MinePanel extends JPanel {
 
         buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 
-        scorese = new ArrayList<>();
-        scoresn = new ArrayList<>();
-        scoresh = new ArrayList<>();
+        if(scorese == null)
+            scorese = new ArrayList<>();
+        if(scoresn == null)
+            scoresn = new ArrayList<>();
+        if(scoresh == null)
+            scoresh = new ArrayList<>();
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -256,14 +259,13 @@ public class MinePanel extends JPanel {
             JLabel t = new JLabel("Enter your name:");
             JTextField w = new JTextField();
 
-            win.add(t);
             win.add(w);
+            win.add(t);
 
             win.setSize(300, 300);
 
-            t.setBounds(50, 50, 200, 50);
-
             w.setBounds(50, 100, 200, 50);
+            t.setBounds(50, 50, 200, 50);
 
             win.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -273,19 +275,25 @@ public class MinePanel extends JPanel {
                     super.windowClosing(e);
                     switch (numMin) {
                         case 15:
-                            scorese.add(new Score(sec, t.getText()));
+                            scorese.add(new Score(sec, w.getText()));
                             Collections.sort(scorese);
                             Collections.reverse(scorese);
+                            if(scorese.size() > 5)
+                                scorese.subList(4, scorese.size()).clear();
                             break;
                         case 40:
-                            scoresn.add(new Score(sec, t.getText()));
+                            scoresn.add(new Score(sec, w.getText()));
                             Collections.sort(scoresn);
                             Collections.reverse(scoresn);
+                            if(scoresn.size() > 5)
+                                scoresn.subList(4, scoresn.size()).clear();
                             break;
                         case 100:
-                            scoresh.add(new Score(sec, t.getText()));
+                            scoresh.add(new Score(sec, w.getText()));
                             Collections.sort(scoresh);
                             Collections.reverse(scoresh);
+                            if(scoresh.size() > 5)
+                                scoresh.subList(4, scoresh.size()).clear();
                     }
                 }
             });

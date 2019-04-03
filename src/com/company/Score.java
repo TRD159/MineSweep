@@ -1,6 +1,8 @@
 package com.company;
 
-public class Score implements Comparable{
+import java.io.Serializable;
+
+public class Score implements Comparable, Serializable {
     int s; String nam;
 
     public Score(int s, String nam) {
@@ -25,6 +27,6 @@ public class Score implements Comparable{
     }
 
     public String toString() {
-        return nam + " - " + s;
+        return nam + "-" + s;
     }
 }
